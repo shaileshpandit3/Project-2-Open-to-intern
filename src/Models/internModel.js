@@ -17,7 +17,7 @@ const internSchema = new mongoose.Schema({
         required: true,
         unique: true,
         pattern: /^[+]91(9|8|7)\d{9}$/,
-        maxlength: 10
+        max: 10
     },
     collegeId: {
         type:ObjectId,

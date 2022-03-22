@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const collegeController = require('../Controllers/collegeController')
-// const internController = require('../Controllers/internController')
+const internController = require('../Controllers/internController')
 
 
 router.get("/test-me", function(req,res){
@@ -10,8 +10,8 @@ router.get("/test-me", function(req,res){
 })
 
 
-router.post("/functionup/colleges",collegeController.collegeSchema)
-router.post("/functionup/interns",internController.internSchema)
+router.post("/functionup/colleges",collegeController.createCollege)
+router.post("/functionup/interns",internController.createIntern)
 
 
 module.exports= router;
