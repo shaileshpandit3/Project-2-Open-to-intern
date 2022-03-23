@@ -45,7 +45,7 @@ if (Object.keys(data).length === 0) {
   res.status(400).send({ status: false, msg: "Body is missing" })
 }
 if (!isValid(name)) {
-  res.status(400).send({ status: false, msg: "Please inter Name" })
+  res.status(400).send({status:false,msg:"Please inter college Name."})
 }
 
 if (!isValid(fullName)) {
@@ -76,16 +76,19 @@ const collegeDetails = async function (req, res) {
     if (!resCollege) { return res.status(404).send({ status: false, Error: "no college found" }) }
 
     let presentInterns = await internModel.find({ collegeId: resCollege._id,isDeleted:false }).select({name:1,email:1,mobile:1})
+    const x = presentInterns.length
     let result = { name: resCollege.name, fullName: resCollege.fullName, logoLink: resCollege.logoLink }
     if (presentInterns.length > 0) {
       result["Interest"] = presentInterns
 
-      return res.status(200).send({ data: result })
+      return res.status(200).send({ total:x,data: result })
     }
+
+    
 
     if (presentInterns.length == 0) {
       result["Interest"] = "no interns for now";
-      return res.status(200).send({ data: result })
+      return res.status(404).send({ data: result })
     }
 
 
@@ -94,8 +97,6 @@ const collegeDetails = async function (req, res) {
   }
 
 }
-
-
 
 module.exports.collegeDetails = collegeDetails;
 

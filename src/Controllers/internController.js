@@ -76,7 +76,7 @@ const createIntern = async function (req, res) {
             res.status(400).send({ status: false, msg: "Please inter a moblie number" })
         }
 
-        if (!(/^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/.test(mobile))) {
+        if (!(/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/.test(mobile))) {
             res.status(400).send({ status: false, msg: "Please eneter valid mobile number" })
             return
         }
@@ -90,7 +90,7 @@ const createIntern = async function (req, res) {
         // }
 
         const internData = await internModel.create(data);
-        res.status(201).send({status:true, msg:'Intern Profile Successfully created',data:internData})
+        res.status(201).send({status:true, msg:'College Internship Successfully created',data:internData})
 
 
     } catch (err) {

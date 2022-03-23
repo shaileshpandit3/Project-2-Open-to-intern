@@ -4,7 +4,8 @@ const ObjectId = mongoose.Schema.Types.ObjectId
 const internSchema = new mongoose.Schema({
     name:{
         type:String,
-        required:true
+        required:true,
+        trim:true
     },
     email: {
         type:String,
@@ -16,8 +17,7 @@ const internSchema = new mongoose.Schema({
         type:String,
         required: true,
         unique: true,
-        pattern: /^[+]91(9|8|7)\d{9}$/,
-        max: 10
+        match: /^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/
     },
     collegeId: {
         type:ObjectId,
