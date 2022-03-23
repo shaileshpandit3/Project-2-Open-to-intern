@@ -103,7 +103,6 @@ const collegeDetails = async function (req, res) {
 
 
 
-
     if (presentInterns.length == 0) {
       result["Interest"] = "no interns for now";
       return res.status(404).send({ data: result })
