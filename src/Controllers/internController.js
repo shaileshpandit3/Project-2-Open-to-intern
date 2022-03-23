@@ -56,15 +56,30 @@ const createIntern = async function (req, res) {
 
     try {
 
-        let { email, mobile,collegeId } = req.body;
+        let { name, email, mobile, collegeId } = req.body;
         data = req.body
         if (Object.keys(data).length < 0) {
             res.status(400).send({ status: false, msg: "Body is missing" })
         }
 
+        // name is required
+        const req0 = isValid(name)
+        if (!req0) {
+            return res.status(400).send({ status: false, msg: " name is required" })
+        }
+
+
         if (!isValid(email)) {
             res.status(400).send({ status: false, msg: "Please inter a email id" })
         }
+
+        //duplicate email
+        const isEmailAlreadyUsed = await internModel.findOne({ email });
+
+        if (isEmailAlreadyUsed) {
+            return res.status(400).send({ status: false, msg: `${email} email is already used` })
+        }
+
 
         if (!(/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email))) {
             res.status(400).send({ status: false, msg: "Please enter valid email Id" })
@@ -76,6 +91,12 @@ const createIntern = async function (req, res) {
             res.status(400).send({ status: false, msg: "Please inter a moblie number" })
         }
 
+        const isMobileAlreadyUsed = await internModel.findOne({ mobile });
+        if (isMobileAlreadyUsed) {
+            return res.status(400).send({ status: false, msg: `${mobile} mobile is already used` })
+        }
+
+
         if (!(/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/.test(mobile))) {
             res.status(400).send({ status: false, msg: "Please eneter valid mobile number" })
             return
@@ -85,12 +106,16 @@ const createIntern = async function (req, res) {
             res.status(400).send({ status: false, msa: "Please inter a college id" })
         }
 
+        let newData = req.query
+        if (Object.keys(newData).length > 0) {
+            res.status(400).send({ status: false, msg: "Please don't use params" })
+        }
         // if (!isValidObjectId(collegeId)) {
         //     res.status(400).send({ status: false, msg: "Please inter a valid college id" })
         // }
 
         const internData = await internModel.create(data);
-        res.status(201).send({status:true, msg:'College Internship Successfully created',data:internData})
+        res.status(201).send({ status: true, msg: 'College Internship Successfully created', data: internData })
 
 
     } catch (err) {

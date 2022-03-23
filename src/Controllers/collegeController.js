@@ -38,29 +38,46 @@ const isValid = function (value) {
 
 const createCollege = async function (req, res) {
 
- 
-try{const { name, fullName, isDeleted } = req.body;
-let data = req.body
-if (Object.keys(data).length === 0) {
-  res.status(400).send({ status: false, msg: "Body is missing" })
-}
-if (!isValid(name)) {
-  res.status(400).send({status:false,msg:"Please inter college Name."})
-}
 
-if (!isValid(fullName)) {
-  res.status(400).send({ status: false, msg: "Please inter college fullName" })
-}
+  try {
+    const { name, fullName, isDeleted, logoLink } = req.body;
+    let data = req.body
+    if (Object.keys(data).length === 0) {
+      res.status(400).send({ status: false, msg: "Body is missing" })
+    }
+    if (!isValid(name)) {
+      res.status(400).send({ status: false, msg: "Please inter college Name." })
+    }
 
-if (isDeleted === true ){
-  res.status(400).send({ status : false, msg : "you are not allowed to delete an Entry"})
-  return
-  }
+    const isNameAlreadyUsed = await collegeModel.findOne({ name });
+    if (isNameAlreadyUsed) {
+      return res.status(400).send({ status: false, msg: `${name} Abrivation is allready is used` });
+    }
 
-  const createCollege = await collegeModel.create(data)
-    res.status(201).send({status: true,msg:createCollege})
-  }catch(error){
-    res.status(500).send({status:false,error:error.message})
+
+    if (!isValid(fullName)) {
+      res.status(400).send({ status: false, msg: "Please inter college fullName" })
+    }
+
+    if (!(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/.test(logoLink)))
+      return res.status(400).send({ status: false, msg: " logoLink is invalid" })
+
+
+    if (isDeleted === true) {
+      res.status(400).send({ status: false, msg: "you are not allowed to delete an Entry" })
+      return
+    }
+
+    let newData = req.query
+    if (Object.keys(newData).length > 0) {
+      res.status(400).send({ status: false, msg: "Please don't use params" })
+    }
+
+
+    const createCollege = await collegeModel.create(data)
+    res.status(201).send({ status: true, msg: createCollege })
+  } catch (error) {
+    res.status(500).send({ status: false, error: error.message })
   }
 }
 
@@ -75,16 +92,17 @@ const collegeDetails = async function (req, res) {
     let resCollege = await collegeModel.findOne({ name: collegeName })
     if (!resCollege) { return res.status(404).send({ status: false, Error: "no college found" }) }
 
-    let presentInterns = await internModel.find({ collegeId: resCollege._id,isDeleted:false }).select({name:1,email:1,mobile:1})
+    let presentInterns = await internModel.find({ collegeId: resCollege._id, isDeleted: false }).select({ name: 1, email: 1, mobile: 1 })
     const x = presentInterns.length
     let result = { name: resCollege.name, fullName: resCollege.fullName, logoLink: resCollege.logoLink }
     if (presentInterns.length > 0) {
       result["Interest"] = presentInterns
 
-      return res.status(200).send({ total:x,data: result })
+      return res.status(200).send({ total: x, data: result })
     }
 
-    
+
+
 
     if (presentInterns.length == 0) {
       result["Interest"] = "no interns for now";
